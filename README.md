@@ -6,7 +6,6 @@
 
 ## front-end
 * `react.js`
-* `typeScript`
 * `redux`
 ## back-end
 * `socket.io`
