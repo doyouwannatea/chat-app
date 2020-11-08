@@ -11,7 +11,7 @@ const ChatWindow = ({ messages }) => {
         <div id="chat-window" className="chat__window">
             {
                 messages.map(message =>
-                    <div className={`message ${message.owner && 'message--right'}`}>
+                    <div className={`message ${message.owner ? 'message--right' : ''}`}>
                         <span className="message__time text-muted">{message.time}</span>
                         {message.text}
                     </div>

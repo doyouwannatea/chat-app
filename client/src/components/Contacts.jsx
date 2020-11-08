@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import socket from '../network/io'
+import { socket } from '../utils'
 
 import AddContactForm from './AddContactForm'
 
-
-const Contacts = ({ contactsList }) => {
+const Contacts = ({ contactsList, isMobile, isNavbarActive, toggleNavbarState }) => {
     const [modal, setModal] = useState(false)
 
     useEffect(() => {
@@ -12,11 +11,14 @@ const Contacts = ({ contactsList }) => {
     }, [])
 
     return (
-        <aside className="contacts">
-            {contactsList}
-            <button onClick={() => setModal(true)} className="btn btn-primary btn-sm add-contact"></button>
-            { modal && <AddContactForm closeModal={() => { setModal(false) }} />}
-        </aside>
+        <>
+            <aside className={`contacts ${isMobile ? 'mobile' : ''} ${isNavbarActive ? 'active' : ''}`}>
+                <button onClick={toggleNavbarState} className="close-btn btn"></button>
+                {contactsList}
+                <button onClick={() => setModal(true)} className="btn btn-primary btn-sm add-contact"></button>
+            </aside>
+            { modal && <AddContactForm closeModal={() => setModal(false)} />}
+        </>
     )
 }
 

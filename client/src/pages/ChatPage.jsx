@@ -4,11 +4,11 @@ import ChatAppHeader from '../components/ChatAppHeader'
 import ChatAppFooter from '../components/ChatAppFooter'
 import ChatAppBody from '../components/ChatAppBody'
 
-const ChatPage = ({ name }) => {
+const ChatPage = () => {
     return (
         <>
-            <ChatAppHeader name={name} />
-            <ChatAppBody name={name}/>
+            <ChatAppHeader />
+            <ChatAppBody />
             <ChatAppFooter />
         </>
     )

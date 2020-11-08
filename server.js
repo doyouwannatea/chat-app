@@ -2,22 +2,21 @@ const path = require('path')
 const express = require('express')
 const http = require('http')
 const socketio = require('socket.io')
-const moment = require('moment')
-
-const {
-    deleteUser,
-    findUserByName,
-    findUserById,
-    addUser,
-    addContact,
-    addMessage,
-    updateContacts,
-    createMessage
-} = require('./utils/users')
 
 const app = express()
 const server = http.createServer(app)
 const io = socketio(server)
+
+const { Users, createMessage } = require('./utils')
+const { 
+    addContact,
+    addMessage,
+    addUser,
+    deleteUser,
+    findUserById,
+    findUserByName,
+    updateContacts 
+} = Users
 
 app.use(express.static(path.join(__dirname, 'client/build')))
 
@@ -26,7 +25,7 @@ io.on('connect', socket => {
     socket.on('registration', name => {
         if (!findUserByName(name)) {
             addUser(name, socket.id)
-            socket.emit('successfulRegistration', true) 
+            socket.emit('login', true) 
         } else {
             socket.emit('systemMessage', createMessage('Выберите другое имя пользователя') ) 
         }
@@ -62,11 +61,8 @@ io.on('connect', socket => {
 
         if (user) {
             const currentUser = findUserById(socket.id)
-            moment.locale()
-            const time = moment().format('LT')
-
-            addMessage(user, currentUser, text, false, time)
-            addMessage(currentUser, user, text, true, time)
+            addMessage(user, currentUser, text, false)
+            addMessage(currentUser, user, text, true)
 
             updateContacts(socket.id, io)
             updateContacts(user.id, io)
@@ -85,4 +81,4 @@ io.on('connect', socket => {
 })
 
 const PORT = process.env.PORT || 8080
-server.listen(PORT)
+server.listen(PORT, () => console.log(`Сервер работает на порту ${PORT}`))

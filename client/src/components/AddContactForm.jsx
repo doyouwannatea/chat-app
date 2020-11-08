@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import socket from '../network/io'
+import { socket } from '../utils'
 
 const AddContactForm = ({ closeModal }) => {
     const [name, setName] = useState('')
@@ -30,7 +30,7 @@ const AddContactForm = ({ closeModal }) => {
                 </header>
                 <main className="popup__body">
                     <div className="popup__actions">
-                        <input onChange={e => setName(e.target.value)} value={name} required className="form-control mb-2" type="text" placeholder="Type user nickname..." />
+                        <input autoFocus={true} onChange={e => setName(e.target.value)} value={name} required className="form-control mb-2" type="text" placeholder="Type user nickname..." />
                         <button className="btn btn-primary">Add</button>
                         <button onClick={closeModal} type="button" className="btn btn-secondary ml-2" data-dismiss="modal">Close</button>
                     </div>

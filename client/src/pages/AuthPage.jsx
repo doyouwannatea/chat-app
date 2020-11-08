@@ -1,13 +1,22 @@
-import React from 'react'
-import socket from '../network/io'
+import React, { useEffect } from 'react'
+import { connect } from 'react-redux'
 
-const AuthPage = ({ name, setName }) => {
+import { login, changeName } from '../actions'
+import { socket } from '../utils'
+
+const AuthPage = ({ name, changeName, login }) => {
+
+    useEffect(() => {
+        socket.on('login', login)
+
+        return () => socket.off('login', login)
+    }, [login])
 
     const changeHandler = e => {
         const name = e.target.value.trim()
 
         if (name.length < 14) {
-            setName(name)
+            changeName(name)
         }
     }
 
@@ -33,4 +42,10 @@ const AuthPage = ({ name, setName }) => {
     )
 }
 
-export default AuthPage
+
+const mapStateToProps = state => ({ name: state.name })
+
+export default connect(
+    mapStateToProps,
+    { login, changeName }
+)(AuthPage)

@@ -1,0 +1,8 @@
+export const changeName = name => ({ type: 'CHANGE_NAME', payload: name }) 
+export const login = () => ({ type: 'LOGIN' }) 
+export const changeChat = chat => ({ type: 'CHANGE_CHAT', payload: chat }) 
+export const updateContacts = contacts => ({ type: 'UPDATE_CONTACTS', payload: contacts }) 
+export const updateIsMobile = isMobile => ({ type: 'UPDATE_IS_MOBILE', payload: isMobile }) 
+export const addSystemMessage = message => ({ type: 'ADD_SYSTEM_MESSAGE', payload: message }) 
+export const updateSystemMessages = id => ({ type: 'UPDATE_SYSTEM_MESSAGES', payload: id }) 
+export const toggleNavbarState = () => ({ type: 'TOGGLE_NAVBAR_STATE' }) 

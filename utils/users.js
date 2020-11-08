@@ -1,75 +1,64 @@
-const users = {}
+const { DateTime } = require('luxon')
 
-const deleteUser = (id, io) => {
-    if (users[id]) {
-        const name = users[id].name
-        delete users[id]
+class Users {
+    users = {}
 
-        for (const user in users) {
-            if (users[user].contacts[name]) {
-                delete users[user].contacts[name]
-                updateContacts(user, io)
+    deleteUser = (id, io) => {
+        if (this.users[id]) {
+            const name = this.users[id].name
+            delete this.users[id]
+
+            for (const user in this.users) {
+                if (this.users[user].contacts[name]) {
+                    delete this.users[user].contacts[name]
+                    this.updateContacts(user, io)
+                }
             }
         }
     }
-}
 
-const addUser = (name, id) => {
-    const newUser = {
-        name,
-        id,
-        contacts: {}
+    addUser = (name, id) => {
+        const newUser = {
+            name,
+            id,
+            contacts: {}
+        }
+
+        this.users[id] = newUser
     }
 
-    users[id] = newUser
-}
+    updateContacts = (id, io) => {
+        io.to(id).emit('updateContacts', this.findUserById(id).contacts)
+    }
 
-const updateContacts = (id, io) => {
-    io.to(id).emit('updateContacts', findUserById(id).contacts)
-}
+    findUserByName = name => {
+        for (const user in this.users) {
+            if (this.users[user].name === name) {
+                return this.users[user]
+            }
+        }
+    }
 
-const findUserByName = name => {
-    for (const user in users) {
-        if (users[user].name === name) {
-            return users[user]
+    findUserById = id => {
+        return this.users[id]
+    }
+
+    addContact = (currentUser, user) => {
+        if (this.users[currentUser.id]) {
+            this.users[currentUser.id].contacts[user.name] = []
+        }
+    }
+
+    addMessage = (from, to, text, owner) => {
+        const { c } = DateTime.local()
+        const m = c.minute < 10 ? `0${c.minute}` : c.minute
+        const h = c.hour < 10 ? `0${c.hour}` : c.hour
+
+        const time = `${h}:${m}`
+        if (this.users[from.id]) {
+            this.users[from.id].contacts[to.name].push({ text , owner, time })
         }
     }
 }
 
-const findUserById = id => {
-    return users[id]
-}
-
-const addContact = (currentUser, user) => {
-    if (users[currentUser.id]) {
-        users[currentUser.id].contacts[user.name] = []
-    }
-}
-
-const addMessage = (from, to, text, owner, time) => {
-    if (users[from.id]) {
-        users[from.id].contacts[to.name].push({
-            text,
-            owner,
-            time
-        })
-    }
-}
-
-const createMessage = (text) => {
-    return {
-        text,
-        id: Math.random()
-    }
-}
-
-module.exports = {
-    deleteUser,
-    findUserByName,
-    findUserById,
-    addUser,
-    addContact,
-    addMessage,
-    updateContacts,
-    createMessage
-}
+module.exports = new Users()

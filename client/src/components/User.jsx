@@ -1,10 +1,13 @@
 import React from 'react'
+import { connect } from 'react-redux';
 import userDummyImage from '../assets/user.jpg';
+import { changeChat, toggleNavbarState } from '../actions'
 
-const User = ({ name, setCurrentChat, currentChat }) => {
+const User = ({ name, changeChat, currentChat, toggleNavbarState }) => {
 
     const userHandler = () => {
-        setCurrentChat(name)
+        changeChat(name)
+        toggleNavbarState()
     }
 
     const isCurrent = currentChat === name ? 'active' : ''
@@ -17,4 +20,9 @@ const User = ({ name, setCurrentChat, currentChat }) => {
     )
 }
 
-export default User
+const mapStateToProps = state => ({ currentChat: state.currentChat })
+
+export default connect(
+    mapStateToProps,
+    { changeChat, toggleNavbarState }
+)(User)

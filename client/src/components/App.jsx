@@ -1,38 +1,48 @@
-import React, { useEffect, useState } from 'react'
-import socket from '../network/io'
+import React, { useEffect } from 'react'
+import { connect } from 'react-redux'
+
+import {
+  updateSystemMessages,
+  updateContacts,
+  addSystemMessage,
+  updateIsMobile
+} from '../actions'
+
+import { socket } from '../utils'
 
 import AuthPage from '../pages/AuthPage'
 import ChatPage from '../pages/ChatPage'
 import SystemMessage from './SystemMessage'
 
-const App = () => {
-  const [systemMessages, setSystemMessages] = useState([])
-  const [auth, setAuth] = useState(false)
-  const [name, setName] = useState('')
+const App = (props) => {
+  const {
+    systemMessages,
+    isAuth,
+    updateIsMobile,
+    addSystemMessage,
+    updateContacts,
+    updateSystemMessages
+  } = props
 
   useEffect(() => {
-    socket.on('systemMessage', message => setSystemMessages(prev => [...prev, message]))
-    socket.on('successfulRegistration', () => setAuth(true))
-  }, [])
+    socket.on('systemMessage', message => addSystemMessage(message))
+    socket.on('updateContacts', contacts => updateContacts(contacts))
 
-  const deleteHandler = id => {
-    setSystemMessages(prev => {
-      const idx = prev.findIndex(item => item.id === id)
-      return [...prev.slice(0, idx), ...prev.slice(idx + 1)]
-    })
-  }
+    updateIsMobile(window.innerWidth < 576)
+    window.addEventListener('resize', () => updateIsMobile(window.innerWidth < 576))
+  }, [addSystemMessage, updateContacts, updateIsMobile])
 
   const messages = systemMessages.map(message =>
     <SystemMessage
       key={message.id}
       message={message.text}
-      close={() => deleteHandler(message.id)}
+      close={() => updateSystemMessages(message.id)}
     />
   )
 
   return (
     <>
-      { auth ? <ChatPage name={name} /> : <AuthPage name={name} setName={setName} />}
+      { isAuth ? <ChatPage /> : <AuthPage /> }
       <ul className="system-messages-list">
         {messages}
       </ul>
@@ -40,4 +50,15 @@ const App = () => {
   )
 }
 
-export default App
+const mapStateToProps = state => ({ systemMessages: state.systemMessages, isAuth: state.isAuth })
+const mapDispatchToProps = {
+  updateSystemMessages,
+  updateContacts,
+  addSystemMessage,
+  updateIsMobile
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App)
