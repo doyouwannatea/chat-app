@@ -2,7 +2,7 @@ import { createStore } from 'redux';
 
 const initialState = {
     name: '',
-    isAuth: true,
+    isAuth: false,
     currentChat: '',
     contacts: {},
     isMobile: false,
